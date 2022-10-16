@@ -1,5 +1,8 @@
 import tree.DecisionTree;
+import tree.Node;
+
 import utils.CSVReader;
+import utils.ConsoleColors;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,24 +12,13 @@ public class Main {
         //String filename = "MODIFIED_DATA.csv";
         String filename = "test.csv";
         try {
-            ArrayList<String[]> data = CSVReader.readFile(filename, false);
-            System.out.println(DecisionTree.calcInfo(data));
-            System.out.println(DecisionTree.calcInfoX(data, 0));
-            System.out.println(DecisionTree.calcSplitInfoX(data, 0));
-            System.out.println(DecisionTree.calcGainRatio(data, 0));
-            /*
-            for (String[] s : data) {
-                for (int i = 0; i < s.length; i++) {
-                    if (i == s.length - 1) {
-                        System.out.println(s[i]);
-                    } else {
-                        System.out.print(s[i] + ";");
-                    }
-                }
-            }
-            */
+            CSVReader.readFile(filename, true);
+            ArrayList<String[]> data = CSVReader.getData();
+            ArrayList<String> header = CSVReader.getHeader();
+            Node tree = DecisionTree.createTree(data, header, null);
+            System.out.println("Построение дерева решений завершено.");
         } catch (IOException e) {
-            System.out.println("При чтении файла " + filename + " произошла ошибка!");
+            System.out.println(ConsoleColors.RED + "При чтении файла \"" + filename + "\" произошла ошибка!" + ConsoleColors.RESET);
         }
     }
 }

@@ -3,24 +3,41 @@ package utils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class CSVReader {
-    public static ArrayList<String[]> readFile(String filename, boolean hasHeader) throws IOException {
-        Scanner scanner = new Scanner(new FileInputStream(filename));
-        ArrayList<String[]> data = new ArrayList<>();
+    private static ArrayList<String[]> data;
+    private static ArrayList<String> header;
 
+    public static void readFile(String filename, boolean hasHeader) throws IOException {
+        Scanner scanner = new Scanner(new FileInputStream(filename));
+        data = new ArrayList<>();
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            if (!hasHeader) {
-                String[] row = line.split(";");
-                data.add(row);
+            String[] row = line.split(";");
+            if (header == null) {
+                header = new ArrayList<>();
+                if (hasHeader) {
+                    header.addAll(Arrays.asList(row));
+                } else {
+                    for (int i = 0; i < row.length; i++) {
+                        header.add(Integer.toString(i + 1));
+                    }
+                    data.add(row);
+                }
             } else {
-                hasHeader = false;
+                data.add(row);
             }
         }
-
         scanner.close();
+    }
+
+    public static ArrayList<String[]> getData() {
         return data;
+    }
+
+    public static ArrayList<String> getHeader() {
+        return header;
     }
 }
