@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CSVReader {
-
     public static ArrayList<String[]> readFile(String filename, boolean hasHeader) throws IOException {
         Scanner scanner = new Scanner(new FileInputStream(filename));
         ArrayList<String[]> data = new ArrayList<>();

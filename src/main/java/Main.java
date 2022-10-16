@@ -1,3 +1,4 @@
+import tree.DecisionTree;
 import utils.CSVReader;
 
 import java.io.IOException;
@@ -5,23 +6,27 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
+        //String filename = "MODIFIED_DATA.csv";
+        String filename = "test.csv";
         try {
-            ArrayList<String[]> list = CSVReader.readFile("DATA.csv", true);
-            for (String[] s : list) {
+            ArrayList<String[]> data = CSVReader.readFile(filename, false);
+            System.out.println(DecisionTree.calcInfo(data));
+            System.out.println(DecisionTree.calcInfoX(data, 0));
+            System.out.println(DecisionTree.calcSplitInfoX(data, 0));
+            System.out.println(DecisionTree.calcGainRatio(data, 0));
+            /*
+            for (String[] s : data) {
                 for (int i = 0; i < s.length; i++) {
                     if (i == s.length - 1) {
-                        if (Integer.parseInt(s[i]) > 1) {
-                            System.out.println(1 + " (was " + s[i] + ")");
-                        } else {
-                            System.out.println(0 + " (was " + s[i] + ")");
-                        }
-                    } else if (i > 0) {
+                        System.out.println(s[i]);
+                    } else {
                         System.out.print(s[i] + ";");
                     }
                 }
             }
+            */
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("При чтении файла " + filename + " произошла ошибка!");
         }
     }
 }
