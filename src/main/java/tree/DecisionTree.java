@@ -5,24 +5,50 @@ import java.util.HashMap;
 
 import utils.ConsoleColors;
 
+import static utils.DataManager.*;
+
 public class DecisionTree {
 
     public static Node createTree(ArrayList<String[]> data, ArrayList<String> header, ArrayList<Integer> prevIndexes) {
+        Node node;
         try {
-            printData(data, prevIndexes);
+            printDataAndHeader(data, header, prevIndexes);
+            if (header.size() == 1) {
+                throw new NumberFormatException();
+            }
+
             int indexOfAttribute = findMaxGainRatio(data, header);
             HashMap<String, ArrayList<Integer>> values = getValuesOfAttribute(data, indexOfAttribute);
-            Node node = new Node(header.get(indexOfAttribute));
+            node = new Node(header.get(indexOfAttribute));
             for (String value : values.keySet()) {
                 System.out.println("\nВыбираем записи, где \"" + ConsoleColors.GREEN + header.get(indexOfAttribute) + ConsoleColors.RESET + "\" = \"" + ConsoleColors.CYAN + value + ConsoleColors.RESET + "\":");
                 node.getChildren().put(value, createTree(dropAttributeFromData(selectRowsByIndexes(data, values.get(value)), indexOfAttribute), dropAttributeFromHeader(header, indexOfAttribute), selectPrevIndexesByIndexes(prevIndexes, values.get(value))));
             }
-            return node;
         } catch (NumberFormatException e) {
-            Node node = new Node(data.get(0)[header.size() - 1]);
-            System.out.println("Определена принадлеждность к классу \"" + ConsoleColors.PURPLE + node.getName() + ConsoleColors.RESET + "\"!");
-            return node;
+            String className = null;
+            if (getValuesOfAttribute(data, header.size() - 1).size() == 1) {
+                className = data.get(0)[header.size() - 1];
+            }
+            node = new Node(className);
+
+            if (className != null) {
+                System.out.println("Определена принадлеждность к классу \"" + ConsoleColors.PURPLE + node.getName() + ConsoleColors.RESET + "\"!");
+            } else {
+                System.out.println(ConsoleColors.RED + "Определить принадлеждность к классу невозможно!" + ConsoleColors.RESET);
+            }
         }
+        return node;
+    }
+
+    public static String classify(ArrayList<String> row, Node tree, ArrayList<String> header) {
+        if (tree.getChildren().isEmpty()) {
+            return tree.getName();
+        }
+        String nameOfAttribute = tree.getName();
+        int indexOfAttribute = header.indexOf(nameOfAttribute);
+        String valueOfAttribute = row.get(indexOfAttribute);
+        Node nextNode = tree.getChildren().get(valueOfAttribute);
+        return classify(dropAttributeFromHeader(row, indexOfAttribute), nextNode, dropAttributeFromHeader(header, indexOfAttribute));
     }
 
     public static int findMaxGainRatio(ArrayList<String[]> data, ArrayList<String> header) throws NumberFormatException {
@@ -71,76 +97,5 @@ public class DecisionTree {
 
     public static double calcGainRatio(ArrayList<String[]> data, int indexOfAttribute) {
         return (calcInfo(data) - calcInfoX(data, indexOfAttribute)) / calcSplitInfoX(data, indexOfAttribute);
-    }
-
-    private static HashMap<String, ArrayList<Integer>> getValuesOfAttribute(ArrayList<String[]> data, int indexOfAttribute) {
-        HashMap<String, ArrayList<Integer>> values = new HashMap<>();
-        for (int i = 0; i < data.size(); i++) {
-            String value = data.get(i)[indexOfAttribute];
-            ArrayList<Integer> indexes = values.get(value);
-            if (indexes == null) {
-                indexes = new ArrayList<>();
-            }
-            indexes.add(i);
-            values.put(value, indexes);
-        }
-        return values;
-    }
-
-    private static ArrayList<String[]> selectRowsByIndexes(ArrayList<String[]> data, ArrayList<Integer> indexes) {
-        ArrayList<String[]> newData = new ArrayList<>();
-        for (int i : indexes) {
-            newData.add(data.get(i));
-        }
-        return newData;
-    }
-
-    private static ArrayList<Integer> selectPrevIndexesByIndexes(ArrayList<Integer> prevIndexes, ArrayList<Integer> indexes) {
-        ArrayList<Integer> newIndexes = new ArrayList<>();
-        for (int i : indexes) {
-            if (prevIndexes == null) {
-                newIndexes.add(i);
-            } else {
-                newIndexes.add(prevIndexes.get(i));
-            }
-        }
-        return newIndexes;
-    }
-
-    private static ArrayList<String[]> dropAttributeFromData(ArrayList<String[]> data, int indexOfAttribute) {
-        ArrayList<String[]> newData = new ArrayList<>();
-        for (String[] row : data) {
-            String[] newRow = new String[row.length - 1];
-            for (int i = 0; i < newRow.length; i++) {
-                newRow[i] = i < indexOfAttribute ? row[i] : row[i + 1];
-            }
-            newData.add(newRow);
-        }
-        return newData;
-    }
-
-    private static ArrayList<String> dropAttributeFromHeader(ArrayList<String> header, int indexOfAttribute) {
-        ArrayList<String> newHeader = new ArrayList<>(header);
-        newHeader.remove(indexOfAttribute);
-        return newHeader;
-    }
-
-    public static void printData(ArrayList<String[]> data, ArrayList<Integer> indexes) {
-        for (int i = 0; i < data.size(); i++) {
-            if (indexes == null) {
-                System.out.print("\t" + (i + 1) + ". ");
-            } else {
-                System.out.print("\t" + (indexes.get(i) + 1) + ". ");
-            }
-
-            String[] row = data.get(i);
-            for (int j = 0; j < row.length; j++) {
-                if (j == row.length - 1) {
-                    System.out.println(row[j]);
-                } else {
-                    System.out.print(row[j] + " ");
-                }
-            }
-        }
     }
 }

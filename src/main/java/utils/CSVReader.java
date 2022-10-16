@@ -33,6 +33,10 @@ public class CSVReader {
         scanner.close();
     }
 
+    public static ArrayList<String> parseString(String s) {
+        return new ArrayList<>(Arrays.asList(s.split(";")));
+    }
+
     public static ArrayList<String[]> getData() {
         return data;
     }
