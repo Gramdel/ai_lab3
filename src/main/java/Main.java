@@ -10,15 +10,17 @@ import java.util.Random;
 
 import static utils.DataManager.*;
 
+import test.Metrics;
+
 public class Main {
     public static void main(String[] args) {
-        String filename = "MODIFIED_DATA.csv";
-        //String filename = "test.csv";
+        //String filename = "MODIFIED_DATA.csv";
+        String filename = "test.csv";
         try {
             CSVReader.readFile(filename, true);
             ArrayList<String[]> data = CSVReader.getData();
             ArrayList<String> header = CSVReader.getHeader();
-            ArrayList<Integer> indexes = selectRandomIndexes(header.size() - 1);
+            ArrayList<Integer> indexes = selectRandomIndexes(header.size());
 
             data = selectColumnsByIndexes(data, indexes);
             header = selectAttributesFromHeader(header, indexes);
@@ -27,6 +29,8 @@ public class Main {
             Node tree = DecisionTree.createTree(data, header, null);
             System.out.println("Построение дерева решений завершено.");
 
+            int[][] confusionMatrix = Metrics.createConfusionMatrix(data, tree, header);
+            System.out.println();
             /*
             System.out.println(DecisionTree.classify(CSVReader.parseString("Sunny;Hot;High;False"), tree, header));
             System.out.println(DecisionTree.classify(CSVReader.parseString("Sunny;Hot;High;True"), tree, header));
@@ -54,7 +58,7 @@ public class Main {
             indexes.add(i);
         }
 
-        int sqrtOfN = (int) Math.sqrt(n);
+        int sqrtOfN = (int) Math.sqrt(n-1);
         Random rand = new Random();
         ArrayList<Integer> newIndexes = new ArrayList<>();
         for (int i = 0; i < sqrtOfN; i++) {
@@ -62,6 +66,7 @@ public class Main {
             newIndexes.add(indexes.get(randomNumber));
             indexes.remove(randomNumber);
         }
+        newIndexes.add(indexes.get(indexes.size()-1));
         newIndexes.sort(Integer::compareTo);
         return newIndexes;
     }

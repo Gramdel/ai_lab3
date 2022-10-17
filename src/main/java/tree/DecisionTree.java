@@ -1,6 +1,7 @@
 package tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import utils.ConsoleColors;
@@ -49,6 +50,14 @@ public class DecisionTree {
         String valueOfAttribute = row.get(indexOfAttribute);
         Node nextNode = tree.getChildren().get(valueOfAttribute);
         return classify(dropAttributeFromHeader(row, indexOfAttribute), nextNode, dropAttributeFromHeader(header, indexOfAttribute));
+    }
+
+    public static ArrayList<String> classifyAll(ArrayList<String[]> data, Node tree, ArrayList<String> header) {
+        ArrayList<String> predictedClasses = new ArrayList<>();
+        for (String[] row : data) {
+            predictedClasses.add(classify(new ArrayList<>(Arrays.asList(row)), tree, header));
+        }
+        return predictedClasses;
     }
 
     public static int findMaxGainRatio(ArrayList<String[]> data, ArrayList<String> header) throws NumberFormatException {

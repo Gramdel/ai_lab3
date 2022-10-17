@@ -46,7 +46,6 @@ public class DataManager {
             for (int i : indexes) {
                 rowAsList.add(row[i]);
             }
-            rowAsList.add(row[row.length - 1]);
             String[] newRow = new String[rowAsList.size()];
             for (int i = 0; i < newRow.length; i++) {
                 newRow[i] = rowAsList.get(i);
@@ -61,7 +60,6 @@ public class DataManager {
         for (int i : indexes) {
             newHeader.add(header.get(i));
         }
-        newHeader.add(header.get(header.size() - 1));
         return newHeader;
     }
 
