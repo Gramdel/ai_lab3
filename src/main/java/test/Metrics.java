@@ -29,30 +29,41 @@ public class Metrics {
             }
 
             int indexOfPredictedClassname = 0;
-            for (int j = 0; j < classNames.size(); j++) {
-                if (predictedClass == null) {
-                    if (!classNames.get(j).equals(actualClass)) {
-                        indexOfActualClassname = j;
-                        break;
-                    }
-                } else if (classNames.get(j).equals(predictedClass)) {
-                    indexOfActualClassname = j;
-                    break;
-                }
-            }
-
             if (predictedClass == null) {
+                if (indexOfActualClassname == 0) {
+                    indexOfPredictedClassname = 1;
+                }
+            } else {
                 for (int j = 0; j < classNames.size(); j++) {
-                    if (!classNames.get(j).equals(actualClass)) {
+                    if (classNames.get(j).equals(predictedClass)) {
                         indexOfPredictedClassname = j;
                         break;
                     }
                 }
-            } else {
-                indexOfPredictedClassname = classNames.indexOf(actualClass);
             }
+
             confusionMatrix[indexOfActualClassname][indexOfPredictedClassname] += 1;
         }
         return confusionMatrix;
+    }
+
+    public static double calcAccuracy(int[][] confusionMatrix) {
+        return (double) (confusionMatrix[0][0] + confusionMatrix[1][1]) / (confusionMatrix[0][0] + confusionMatrix[0][1] + confusionMatrix[1][0] + confusionMatrix[1][1]);
+    }
+
+    public static double calcPrecision(int[][] confusionMatrix) {
+        return (double) confusionMatrix[0][0] / (confusionMatrix[0][0] + confusionMatrix[0][1]);
+    }
+
+    public static double calcRecall(int[][] confusionMatrix) {
+        return (double) confusionMatrix[0][0] / (confusionMatrix[0][0] + confusionMatrix[1][0]);
+    }
+
+    public static double calcTPR(int[][] confusionMatrix) {
+        return (double) confusionMatrix[0][0] / (confusionMatrix[0][0] + confusionMatrix[1][0]);
+    }
+
+    public static double calcFPR(int[][] confusionMatrix) {
+        return (double) confusionMatrix[0][1] / (confusionMatrix[0][1] + confusionMatrix[1][1]);
     }
 }

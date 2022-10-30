@@ -14,8 +14,8 @@ import test.Metrics;
 
 public class Main {
     public static void main(String[] args) {
-        //String filename = "MODIFIED_DATA.csv";
-        String filename = "test.csv";
+        String filename = "MODIFIED_DATA.csv";
+        //String filename = "test.csv";
         try {
             CSVReader.readFile(filename, true);
             ArrayList<String[]> data = CSVReader.getData();
@@ -25,30 +25,23 @@ public class Main {
             data = selectColumnsByIndexes(data, indexes);
             header = selectAttributesFromHeader(header, indexes);
 
-            System.out.println("Начинаем построение дерева...");
+            System.out.println(ConsoleColors.YELLOW + "Начинаем построение дерева..." + ConsoleColors.RESET);
             Node tree = DecisionTree.createTree(data, header, null);
-            System.out.println("Построение дерева решений завершено.");
+            System.out.println(ConsoleColors.YELLOW + "Построение дерева решений завершено." + ConsoleColors.RESET);
 
+            System.out.println(ConsoleColors.YELLOW + "\nСчитаем метрики..." + ConsoleColors.RESET);
             int[][] confusionMatrix = Metrics.createConfusionMatrix(data, tree, header);
-            System.out.println();
-            /*
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Sunny;Hot;High;False"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Sunny;Hot;High;True"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Overcast;Hot;High;False"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Rain;Mild;High;False"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Rain;Cool;Normal;False"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Rain;Cool;Normal;True"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Overcast;Cool;Normal;True"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Sunny;Mild;High;False"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Sunny;Cool;Normal;False"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Rain;Mild;Normal;False"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Sunny;Mild;Normal;True"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Overcast;Mild;High;True"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Overcast;Hot;Normal;False"), tree, header));
-            System.out.println(DecisionTree.classify(CSVReader.parseString("Rain;Mild;High;True"), tree, header));
-             */
+            System.out.println("True Positive(TP): " + confusionMatrix[0][0]);
+            System.out.println("False Positive(FP): " + confusionMatrix[0][1]);
+            System.out.println("False Negative(FN): " + confusionMatrix[1][0]);
+            System.out.println("True Negative(TN): " + confusionMatrix[1][1]);
+            System.out.println("Accuracy: " + Metrics.calcAccuracy(confusionMatrix));
+            System.out.println("Precision: " + Metrics.calcPrecision(confusionMatrix));
+            System.out.println("Recall: " + Metrics.calcRecall(confusionMatrix));
+            System.out.println("TPR: " + Metrics.calcTPR(confusionMatrix));
+            System.out.println("FPR: " + Metrics.calcFPR(confusionMatrix));
         } catch (IOException e) {
-            System.out.println(ConsoleColors.RED + "При чтении файла \"" + filename + "\" произошла ошибка!" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.RED + "При чтении файла \"" + ConsoleColors.RED_BOLD + filename + ConsoleColors.RED + "\" произошла ошибка!" + ConsoleColors.RESET);
         }
     }
 
@@ -58,7 +51,7 @@ public class Main {
             indexes.add(i);
         }
 
-        int sqrtOfN = (int) Math.sqrt(n-1);
+        int sqrtOfN = (int) Math.sqrt(n - 1);
         Random rand = new Random();
         ArrayList<Integer> newIndexes = new ArrayList<>();
         for (int i = 0; i < sqrtOfN; i++) {
@@ -66,7 +59,7 @@ public class Main {
             newIndexes.add(indexes.get(randomNumber));
             indexes.remove(randomNumber);
         }
-        newIndexes.add(indexes.get(indexes.size()-1));
+        newIndexes.add(indexes.get(indexes.size() - 1));
         newIndexes.sort(Integer::compareTo);
         return newIndexes;
     }
