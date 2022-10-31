@@ -1,6 +1,6 @@
+import test.Metrics;
 import tree.DecisionTree;
 import tree.Node;
-
 import utils.CSVReader;
 import utils.ConsoleColors;
 
@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static utils.DataManager.*;
-
-import test.Metrics;
 
 public class Main {
     public static void main(String[] args) {
@@ -29,17 +27,28 @@ public class Main {
             Node tree = DecisionTree.createTree(data, header, null);
             System.out.println(ConsoleColors.YELLOW + "Построение дерева решений завершено." + ConsoleColors.RESET);
 
-            System.out.println(ConsoleColors.YELLOW + "\nСчитаем метрики..." + ConsoleColors.RESET);
-            int[][] confusionMatrix = Metrics.createConfusionMatrix(data, tree, header);
-            System.out.println("True Positive(TP): " + confusionMatrix[0][0]);
-            System.out.println("False Positive(FP): " + confusionMatrix[0][1]);
-            System.out.println("False Negative(FN): " + confusionMatrix[1][0]);
-            System.out.println("True Negative(TN): " + confusionMatrix[1][1]);
-            System.out.println("Accuracy: " + Metrics.calcAccuracy(confusionMatrix));
-            System.out.println("Precision: " + Metrics.calcPrecision(confusionMatrix));
-            System.out.println("Recall: " + Metrics.calcRecall(confusionMatrix));
-            System.out.println("TPR: " + Metrics.calcTPR(confusionMatrix));
-            System.out.println("FPR: " + Metrics.calcFPR(confusionMatrix));
+            System.out.print(ConsoleColors.YELLOW + "\nСчитаем метрики..." + ConsoleColors.RESET);
+            ArrayList<Integer> rowIndexes = new ArrayList<>();
+            for (int i = 0; i < data.size(); i++) {
+                rowIndexes.add(i);
+                //System.out.println(ConsoleColors.YELLOW + "\nКоличество строк: " + ConsoleColors.YELLOW_BOLD + (i + 1) + ConsoleColors.RESET);
+
+                int[][] confusionMatrix = Metrics.createConfusionMatrix(selectRowsByIndexes(data, rowIndexes), tree, header);
+
+                /*
+                System.out.println("True Positive(TP): " + confusionMatrix[0][0]);
+                System.out.println("False Positive(FP): " + confusionMatrix[0][1]);
+                System.out.println("False Negative(FN): " + confusionMatrix[1][0]);
+                System.out.println("True Negative(TN): " + confusionMatrix[1][1]);
+                System.out.println("Accuracy: " + Metrics.calcAccuracy(confusionMatrix));
+                System.out.println("Precision: " + Metrics.calcPrecision(confusionMatrix));
+                System.out.println("Recall: " + Metrics.calcRecall(confusionMatrix));
+                System.out.println("TPR: " + Metrics.calcTPR(confusionMatrix));
+                System.out.println("FPR: " + Metrics.calcFPR(confusionMatrix));
+                 */
+
+                System.out.println(Metrics.calcFPR(confusionMatrix) + " " + Metrics.calcTPR(confusionMatrix) + " " + Metrics.calcRecall(confusionMatrix) + " " + Metrics.calcPrecision(confusionMatrix));
+            }
         } catch (IOException e) {
             System.out.println(ConsoleColors.RED + "При чтении файла \"" + ConsoleColors.RED_BOLD + filename + ConsoleColors.RED + "\" произошла ошибка!" + ConsoleColors.RESET);
         }
